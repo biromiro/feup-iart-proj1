@@ -18,7 +18,7 @@ Instruction List (e.g [U, D, R])
 
 ### Initial State
 
-Empty Lisr ( [] )
+Empty List ( [] )
 
 ### Objective Test
 
