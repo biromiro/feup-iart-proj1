@@ -31,6 +31,36 @@ class Board:
             self.vertical_walls.add((0, y))
             self.vertical_walls.add((self.width, y))
 
+    def move(self, position, command):
+        x, y = position
+        if not self.can_move(position, command):
+            return x, y
+
+        if command == 'R':
+            return x+1, y
+        elif command == 'L':
+            return x-1, y
+        elif command == 'U':
+            return x, y-1
+        elif command == 'D':
+            return x, y+1
+
+    def can_move(self, position, command):
+        x, y = position
+        if command == 'R' and (x+1, y) in self.vertical_walls:
+            return False
+        if command == 'L' and (x, y) in self.vertical_walls:
+            return False
+        if command == 'U' and (x, y) in self.horizontal_walls:
+            return False
+        if command == 'D' and (x, y+1) in self.horizontal_walls:
+            return False
+        return True
+
+    # def allowed(self, origin, direction):
+    #    destination = self.move(origin, direction)
+    #    return direction not in self.walls.get(origin, []) and opposite(direction) not in self.walls.get(destination, [])
+
     def display(self, current=None):
         display_width = self.width*2 + 1
         display_height = self.height*2 + 1
@@ -60,7 +90,3 @@ class Board:
                     else:
                         print(' ', end='')
             print('')
-
-    # def allowed(self, origin, direction):
-    #    destination = self.move(origin, direction)
-    #    return direction not in self.walls.get(origin, []) and opposite(direction) not in self.walls.get(destination, [])
