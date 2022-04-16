@@ -1,20 +1,22 @@
-class State:
-    def __init__(self):
-        self.commands = []
+from models.Direction import Direction
 
-    def walk(self, board, animator=None):
-        start = board.start
-        target = board.goal
-        if start == target:
-            return True
-        position = start
-        previous_iterations = []
-        while position not in previous_iterations:
-            previous_iterations.append(position)
-            for commandIdx, command in enumerate(self.commands):
-                if animator != None:
-                    animator.frame(board, self.commands, position, commandIdx)
-                position = board.move(position, command)
-                if position == target:
-                    return True
-        return False
+
+class State:
+    def __init__(self, commands, board):
+        self.commands = commands
+        self.board = board
+
+    def __repr__(self):
+        return self.commands.__repr__()
+
+    def __lt__(self, other):
+        return len(self.commands) < len(self.commands)
+
+    def operator_plus(self, command):
+        return State(self.commands + [command], self.board)
+
+    def child_states(self):
+        return [self.operator_plus(command) for command in Direction]
+
+    def is_final(self):
+        return self.board.walk(self)[0]

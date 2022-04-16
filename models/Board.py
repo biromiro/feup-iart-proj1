@@ -36,30 +36,26 @@ class Board:
         if not self.can_move(position, command):
             return x, y
 
-        if command == 'R':
+        if command == Direction.RIGHT:
             return x+1, y
-        elif command == 'L':
+        elif command == Direction.LEFT:
             return x-1, y
-        elif command == 'U':
+        elif command == Direction.UP:
             return x, y-1
-        elif command == 'D':
+        elif command == Direction.DOWN:
             return x, y+1
 
     def can_move(self, position, command):
         x, y = position
-        if command == 'R' and (x+1, y) in self.vertical_walls:
+        if command == Direction.RIGHT and (x+1, y) in self.vertical_walls:
             return False
-        if command == 'L' and (x, y) in self.vertical_walls:
+        if command == Direction.LEFT and (x, y) in self.vertical_walls:
             return False
-        if command == 'U' and (x, y) in self.horizontal_walls:
+        if command == Direction.UP and (x, y) in self.horizontal_walls:
             return False
-        if command == 'D' and (x, y+1) in self.horizontal_walls:
+        if command == Direction.DOWN and (x, y+1) in self.horizontal_walls:
             return False
         return True
-
-    # def allowed(self, origin, direction):
-    #    destination = self.move(origin, direction)
-    #    return direction not in self.walls.get(origin, []) and opposite(direction) not in self.walls.get(destination, [])
 
     def display(self, current=None):
         display_width = self.width*2 + 1
@@ -90,3 +86,26 @@ class Board:
                     else:
                         print(' ', end='')
             print('')
+
+    def walk(self, state, animator=None):
+        start = self.start
+        target = self.goal
+        if start == target:
+            return (True, 0)
+        position = start
+        previous_iterations = []
+        bestDistance = None
+        while position not in previous_iterations:
+            previous_iterations.append(position)
+            for commandIdx, command in enumerate(state.commands):
+                if animator != None:
+                    animator.frame(self, state.commands, position, commandIdx)
+                position = self.move(position, command)
+                if position == target:
+                    return (True, 0)
+                distance = abs(target[0] - position[0]) + \
+                    abs(target[1] - position[1])
+                if not bestDistance or bestDistance > distance:
+                    bestDistance = distance
+        print(bestDistance)
+        return (False, bestDistance)

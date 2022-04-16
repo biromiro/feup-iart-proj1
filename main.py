@@ -2,6 +2,8 @@ from models.Board import Board
 from models.BoardAnimator import BoardAnimator
 from models.Direction import Direction
 from models.State import State
+from models.Search import Search
+from models.Heuristic import Heuristic
 
 
 def loadProblem(file):
@@ -22,7 +24,10 @@ def loadProblem(file):
 with open("problems/1.txt", 'r') as f:
     board = loadProblem(f)
     board.display()
-    state = State()
-    state.commands = ['R', 'R', 'L', 'U']
+    initialState = State([], board)
+    # findBestState(board, state)
+    #solution = Search.it_deep(initialState, board.is_final)
+    solution = Search.astar(
+        initialState, lambda state: state.is_final(), Heuristic.mandatory_directions)
     animator = BoardAnimator()
-    state.walk(board, animator)
+    board.walk(solution, animator)
