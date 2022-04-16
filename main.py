@@ -1,6 +1,8 @@
 from models.Board import Board
 from models.BoardAnimator import BoardAnimator
 from models.Direction import Direction
+from models.Optimization import Optimization
+from models.Scheduler import Scheduler
 from models.State import State
 from models.Search import Search
 from models.Heuristic import Heuristic
@@ -24,10 +26,14 @@ def loadProblem(file):
 with open("problems/1.txt", 'r') as f:
     board = loadProblem(f)
     board.display()
-    initialState = State([], board)
+    initialState = State([Direction.RIGHT, Direction.UP,
+                         Direction.LEFT, Direction.DOWN], board)
     # findBestState(board, state)
     #solution = Search.it_deep(initialState, board.is_final)
-    solution = Search.astar(
-        initialState, lambda state: state.is_final(), Heuristic.mandatory_directions)
+    # solution = Search.astar(
+    #    initialState, lambda state: state.is_final(), Heuristic.mandatory_directions)
+
+    solution = Optimization.simulated_annealing(
+        initialState, Scheduler.adaptive_cooling, True)
     animator = BoardAnimator()
     board.walk(solution, animator)

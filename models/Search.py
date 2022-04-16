@@ -85,8 +85,6 @@ class Search:
         while (not nodesToVisit.empty()):
             _, currentNode = nodesToVisit.get()
 
-            print(currentNode)
-
             if (currentNode in visited):
                 continue
 

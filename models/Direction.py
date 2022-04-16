@@ -1,4 +1,5 @@
 from enum import Enum, auto
+import random
 
 
 class Direction(Enum):
@@ -6,6 +7,10 @@ class Direction(Enum):
     UP = auto()
     LEFT = auto()
     DOWN = auto()
+
+    @staticmethod
+    def random():
+        return random.choice(list(Direction))
 
     def __repr__(self):
         if self == Direction.RIGHT:

@@ -94,7 +94,7 @@ class Board:
             return (True, 0)
         position = start
         previous_iterations = []
-        bestDistance = None
+        bestDistance = self.width + self.height
         while position not in previous_iterations:
             previous_iterations.append(position)
             for commandIdx, command in enumerate(state.commands):
@@ -107,5 +107,4 @@ class Board:
                     abs(target[1] - position[1])
                 if not bestDistance or bestDistance > distance:
                     bestDistance = distance
-        print(bestDistance)
         return (False, bestDistance)
