@@ -40,10 +40,10 @@ class State:
     def getCommands(self, choice):
         commands = self.commands.copy()
 
-        if (choice == 'change'):
+        if choice == 'change':
             commands[random.randint(
                 0, len(self.commands) - 1)] = Direction.random()
-        elif (choice == 'add'):
+        elif choice == 'add':
             commands.insert(random.randint(
                 0, len(self.commands)), Direction.random())
         else:

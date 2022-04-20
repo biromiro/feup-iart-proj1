@@ -18,9 +18,10 @@ class Optimization:
             if round(temp, 4) == 0:
                 return state
 
-            next_state = state.preferred_moves_neighbour() \
-                if state.board.preferred_moves and use_preferred_moves \
-                else state.random_neighbour()
+            if state.board.preferred_moves and use_preferred_moves:
+                next_state = state.preferred_moves_neighbour()
+            else:
+                next_state = state.random_neighbour()
 
             val1 = next_state.evaluate()
             val2 = state.evaluate()
@@ -28,7 +29,7 @@ class Optimization:
             if delta < 0:
                 state = next_state
                 fsi = state.evaluate()
-                if(f > fsi):
+                if f > fsi:
                     f = fsi
             else:
                 valueToCompare = random.random()
@@ -36,5 +37,31 @@ class Optimization:
                 if probability > valueToCompare:
                     state = next_state
                     fsi = state.evaluate()
-                    if(f > fsi):
+                    if f > fsi:
                         f = fsi
+
+    @staticmethod
+    def genetic_algorithms(gen_zero, selector, crosser, mutator, terminator):
+        gen_size = len(gen_zero)
+        cur_generation = gen_zero
+        next_generation = []
+
+        def fittest(generation):
+            best = None
+            for individual in generation:
+                fitness = individual.evaluate()
+                if not best or fitness < best[1]:
+                    best = (individual, fitness)
+            return best[0]
+        
+        while not terminator(cur_generation):
+            print("new generation")
+            for _ in range(gen_size):
+                parent1, parent2 = selector(cur_generation)
+                offspring = crosser(parent1, parent2)
+                offspring = mutator(offspring)
+                next_generation.append(offspring)
+            cur_generation = next_generation
+        
+        return fittest(cur_generation)
+            

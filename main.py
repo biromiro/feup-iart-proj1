@@ -22,17 +22,32 @@ def loadProblem(file):
         board.add_wall(x, y, Direction.UP)
     return board
 
+import random
 
-with open("problems/20.txt", 'r') as f:
+def solution_1(generation):
+    for individual in generation:
+        if individual.evaluate() == 4:
+            return True
+    return False
+
+with open("problems/1.txt", 'r') as f:
     board = loadProblem(f)
     board.display()
     initialState = board.initial_guess()
+    #gen_zero = []
+    #for _ in range(10):
+    #    individual = State([], board)
+    #    for _ in range(4):
+    #        individual.commands.append(Direction.random())
+    #    gen_zero.append(individual)
+    
+    #solution = Optimization.genetic_algorithms(gen_zero, random_selector, random_crosser, mutate_50, solution_1)
     # findBestState(board, state)
     #solution = Search.bfs(initialState, lambda state: state.is_final())
     # solution = Search.astar(
     #    initialState, lambda state: state.is_final(), Heuristic.mandatory_directions)
 
-    solution = Optimization.simulated_annealing(
-        initialState, Scheduler.exponential_multiplicative_cooling)
+    #solution = Optimization.simulated_annealing(
+    #    initialState, Scheduler.exponential_multiplicative_cooling)
     animator = BoardAnimator()
     board.walk(solution, animator)

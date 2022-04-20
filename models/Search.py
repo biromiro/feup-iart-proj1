@@ -7,9 +7,9 @@ class Search:
         path = [node]
         currentNode = node
 
-        while(True):
+        while True:
             currentNode = currentNode.previousNode
-            if(not currentNode):
+            if not currentNode:
                 break
             path.append(currentNode)
 
@@ -23,12 +23,12 @@ class Search:
         nodesToVisit = [initial]
         visited = []
         count = 0
-        while (nodesToVisit):
+        while nodesToVisit:
             currentNode = nodesToVisit.pop(0)
 
-            if(currentNode in visited):
+            if currentNode in visited:
                 continue
-            if(condition(currentNode)):
+            if condition(currentNode):
                 return currentNode
 
             if count == 100:
@@ -46,20 +46,20 @@ class Search:
     @staticmethod
     def dls(node, condition, depth, visited=[]):
 
-        if(node in visited):
+        if node in visited:
             return (None, False)
-        if(condition(node)):
+        if condition(node):
             return (node, False)
-        if(depth == 0):
+        if depth == 0:
             return (None, visited != [])
 
         for child in node.child_states():
-            if(child in visited):
+            if child in visited:
                 continue
 
             finalNode, _ = Search.dls(child, condition, depth - 1,
                                       visited + [node])
-            if(finalNode):
+            if finalNode:
                 return (finalNode, False)
 
         return (None, visited == [])
@@ -70,12 +70,12 @@ class Search:
         path = None
         curDepth = 1
 
-        while (True):
+        while True:
 
             path, remaining = Search.dls(initial, condition, curDepth)
-            if(path):
+            if path:
                 return path
-            if(not remaining):
+            if not remaining:
                 return None
 
             curDepth += 1
@@ -88,15 +88,15 @@ class Search:
 
         visited = []
 
-        while (not nodesToVisit.empty()):
+        while not nodesToVisit.empty():
             _, currentNode = nodesToVisit.get()
 
-            if (currentNode in visited):
+            if currentNode in visited:
                 continue
 
             visited.append(currentNode)
 
-            if (condition(currentNode)):
+            if condition(currentNode):
                 return currentNode
 
             edgeNodes = currentNode.child_states()
@@ -113,15 +113,15 @@ class Search:
         nodesToVisit.put((heuristic(initial), initial))
         visited = []
 
-        while (not nodesToVisit.empty()):
+        while not nodesToVisit.empty():
             _, currentNode = nodesToVisit.get()
 
-            if (currentNode in visited):
+            if currentNode in visited:
                 continue
 
             visited.append(currentNode)
 
-            if (condition(currentNode)):
+            if condition(currentNode):
                 return currentNode
             print(currentNode)
             edgeNodes = currentNode.child_states()
