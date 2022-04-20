@@ -1,7 +1,7 @@
 import imp
 import random
-from models.Direction import Direction
-from models.State import State
+from src.Direction import Direction
+from src.State import State
 
 
 class Board:
