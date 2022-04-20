@@ -5,7 +5,7 @@ import math
 
 class Optimization:
     @staticmethod
-    def simulated_annealing(state, schedule, adaptive=False):
+    def simulated_annealing(state, schedule, adaptive=False, use_preferred_moves=False):
         temp = 1000
         fsi = state.evaluate()
         f = fsi
@@ -18,7 +18,10 @@ class Optimization:
             if round(temp, 4) == 0:
                 return state
 
-            next_state = state.random_neighbour()
+            next_state = state.preferred_moves_neighbour() \
+                if state.board.preferred_moves and use_preferred_moves \
+                else state.random_neighbour()
+
             val1 = next_state.evaluate()
             val2 = state.evaluate()
             delta = val1 - val2

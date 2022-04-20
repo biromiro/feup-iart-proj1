@@ -1,5 +1,7 @@
 import imp
+import random
 from models.Direction import Direction
+from models.State import State
 
 
 class Board:
@@ -86,6 +88,12 @@ class Board:
                     else:
                         print(' ', end='')
             print('')
+
+    def initial_guess(self):
+        if self.preferred_moves:
+            return State([Direction.random() for _ in range(self.preferred_moves)], self)
+
+        return State([], self)
 
     def walk(self, state, animator=None):
         start = self.start

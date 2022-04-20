@@ -19,31 +19,41 @@ class State:
     def child_states(self):
         return [self.operator_plus(command) for command in Direction]
 
-    def random_neighbour(self):
-        commandsCopy = self.commands.copy()
+    def preferred_moves_neighbour(self):
+        choice = 'change'
 
-        choice = random.choice(['change', 'add', 'remove'])
-
-        if len(commandsCopy) == 0:
+        if len(self.commands) > self.board.preferred_moves:
+            choice = 'remove'
+        elif len(self.commands) < self.board.preferred_moves:
             choice = 'add'
 
+        return State(self.getCommands(choice), self.board)
+
+    def random_neighbour(self):
+        choice = random.choice(['change', 'add', 'remove'])
+
+        if len(self.commands) == 0:
+            choice = 'add'
+
+        return State(self.getCommands(choice), self.board)
+
+    def getCommands(self, choice):
+        commands = self.commands.copy()
+
         if (choice == 'change'):
-            commandsCopy[random.randint(
+            commands[random.randint(
                 0, len(self.commands) - 1)] = Direction.random()
         elif (choice == 'add'):
-            commandsCopy.insert(random.randint(
+            commands.insert(random.randint(
                 0, len(self.commands)), Direction.random())
         else:
-            commandsCopy.pop(random.randint(0, len(self.commands) - 1))
+            commands.pop(random.randint(0, len(self.commands) - 1))
 
-        return State(commandsCopy, self.board)
+        return commands
 
     def is_final(self):
         return self.board.walk(self)[0]
 
     def evaluate(self):
-        finished, distance = self.board.walk(self)
-
-        max_distance = self.board.width + self.board.height
-
-        return (max_distance + distance) * 100 + len(self.commands) if not finished else distance * 10 + len(self.commands)
+        _, distance = self.board.walk(self)
+        return distance * 100 + len(self.commands)

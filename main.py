@@ -23,17 +23,16 @@ def loadProblem(file):
     return board
 
 
-with open("problems/1.txt", 'r') as f:
+with open("problems/20.txt", 'r') as f:
     board = loadProblem(f)
     board.display()
-    initialState = State([Direction.RIGHT, Direction.UP,
-                         Direction.LEFT, Direction.DOWN], board)
+    initialState = board.initial_guess()
     # findBestState(board, state)
-    #solution = Search.it_deep(initialState, board.is_final)
+    #solution = Search.bfs(initialState, lambda state: state.is_final())
     # solution = Search.astar(
     #    initialState, lambda state: state.is_final(), Heuristic.mandatory_directions)
 
     solution = Optimization.simulated_annealing(
-        initialState, Scheduler.adaptive_cooling, True)
+        initialState, Scheduler.exponential_multiplicative_cooling)
     animator = BoardAnimator()
     board.walk(solution, animator)

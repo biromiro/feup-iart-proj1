@@ -22,7 +22,7 @@ class Search:
 
         nodesToVisit = [initial]
         visited = []
-
+        count = 0
         while (nodesToVisit):
             currentNode = nodesToVisit.pop(0)
 
@@ -30,6 +30,12 @@ class Search:
                 continue
             if(condition(currentNode)):
                 return currentNode
+
+            if count == 100:
+                print(currentNode)
+                count = 0
+            else:
+                count += 1
 
             nodesToVisit += currentNode.child_states()
 
@@ -117,7 +123,7 @@ class Search:
 
             if (condition(currentNode)):
                 return currentNode
-
+            print(currentNode)
             edgeNodes = currentNode.child_states()
 
             for node in edgeNodes:
