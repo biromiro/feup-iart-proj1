@@ -1,3 +1,6 @@
+import random
+from src.Direction import Direction
+
 class Mutation:
     @staticmethod
     def mutate_percent(percentage, mutator):

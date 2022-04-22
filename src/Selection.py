@@ -1,10 +1,22 @@
 import random
+from src.State import State
+from src.Direction import Direction
 
-class Selection: 
+class Selection:
+    @staticmethod
+    def generation_zero(population_size, solution_size, board):
+        gen_zero = []
+        for _ in range(population_size):
+            individual = State([], board)
+            for _ in range(solution_size):
+                individual.commands.append(Direction.random())
+            gen_zero.append(individual)
+        return gen_zero
+
     @staticmethod
     def elitist(cut):
         def elite_selector(generation):
-            last_admission = len(generation)*cut
+            last_admission = int(len(generation)*cut)
             elite = sorted(generation, key=lambda individual: individual.evaluate())[:last_admission]
             return (random.choice(elite), random.choice(elite))
         return elite_selector

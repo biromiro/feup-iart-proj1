@@ -3,6 +3,10 @@ from src.BoardAnimator import BoardAnimator
 from src.Direction import Direction
 from src.Optimization import Optimization
 from src.Scheduler import Scheduler
+from src.Selection import Selection
+from src.Crossover import Crossover
+from src.Mutation import Mutation
+from src.Termination import Termination
 from src.State import State
 from src.Search import Search
 from src.Heuristic import Heuristic
@@ -37,17 +41,18 @@ def loadProblem(file):
 #    board.walk(solution, animator)
 
 def main():
-    Graphics().run()
+    #Graphics().run()
+    with open("problems/1.txt", 'r') as f:
+        board = loadProblem(f)
+
+    mutator = Mutation.mutate_percent(5, Mutation.random_corruption)
+    terminator = Termination().iteration_cap(20)
+    solution = Optimization.genetic_algorithms(Selection.generation_zero(20, 4, board), Selection.roulette, Crossover.random_origin, mutator, terminator)
+
+    print(solution)
 
 if __name__ == "__main__":
     main()
-#import random
-
-#def solution_1(generation):
-#    for individual in generation:
-#        if individual.evaluate() == 4:
-#            return True
-#    return False
 
 #with open("problems/1.txt", 'r') as f:
 #    board = loadProblem(f)
