@@ -1,3 +1,4 @@
+from src.solvers.Heuristic import Heuristic
 from src.Direction import Direction
 import random
 
@@ -52,8 +53,16 @@ class State:
         return commands
 
     def is_final(self):
-        return self.board.walk(self)[0]
+        for position in self.board.walk():
+            if position == self.board.goal:
+                return True
+        return False
 
     def evaluate(self):
-        _, distance = self.board.walk(self)
-        return distance * 100 + len(self.commands)
+        return Heuristic.min_manhattan(self) * 100 + len(self.commands)
+
+    @staticmethod
+    def initial_guess(board):
+        if board.preferred_moves:
+            return State([Direction.random() for _ in range(board.preferred_moves)], board)
+        return State([], board)

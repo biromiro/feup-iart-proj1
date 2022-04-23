@@ -1,10 +1,14 @@
 from src.Direction import Direction
 
-
 class Heuristic:
     @staticmethod
     def min_manhattan(state):
-        return state.board.walk(state)[1]
+        best_distance = None
+        for position in state.board.walk():
+            distance = abs(state.board.goal[0] - position[0]) + abs(state.board.goal[1] - position[1])
+            if not best_distance or best_distance > distance:
+                best_distance = distance
+        return best_distance
 
     @staticmethod
     def mandatory_directions(state):

@@ -12,7 +12,7 @@ class Direction(Enum):
     def random():
         return random.choice(list(Direction))
 
-    def __repr__(self):
+    def __str__(self):
         if self == Direction.RIGHT:
             return 'R'
         elif self == Direction.UP:

@@ -1,8 +1,4 @@
-import imp
-import random
 from src.Direction import Direction
-from src.State import State
-
 
 class Board:
     def __init__(self, width, height, moves):
@@ -59,60 +55,15 @@ class Board:
             return False
         return True
 
-    def display(self, current=None):
-        display_width = self.width*2 + 1
-        display_height = self.height*2 + 1
-        for j in range(display_height+1):
-            for i in range(display_width+1):
-                x = i//2
-                y = j//2
-                if i % 2 == 0 and j % 2 == 0:
-                    print('+', end='')
-                elif i % 2 == 0 and j % 2 == 1:
-                    if (x, y) in self.vertical_walls:
-                        print('|', end='')
-                    else:
-                        print(' ', end='')
-                elif i % 2 == 1 and j % 2 == 0:
-                    if (x, y) in self.horizontal_walls:
-                        print('-', end='')
-                    else:
-                        print(' ', end='')
-                else:
-                    if current != None and (x, y) == current:
-                        print('.', end='')
-                    elif (x, y) == self.goal:
-                        print('F', end='')
-                    elif (x, y) == self.start:
-                        print('S', end='')
-                    else:
-                        print(' ', end='')
-            print('')
+    def walk(self, commands):
+        position = self.start
+        previous_iterations = set()
 
-    def initial_guess(self):
-        if self.preferred_moves:
-            return State([Direction.random() for _ in range(self.preferred_moves)], self)
-
-        return State([], self)
-
-    def walk(self, state, animator=None):
-        start = self.start
-        target = self.goal
-        if start == target:
-            return (True, 0)
-        position = start
-        previous_iterations = []
-        bestDistance = self.width + self.height
         while position not in previous_iterations:
-            previous_iterations.append(position)
-            for commandIdx, command in enumerate(state.commands):
-                if animator != None:
-                    animator.frame(self, state.commands, position, commandIdx)
+            previous_iterations.add(position)
+            for command in commands:
+                yield position
+                if position == self.goal:
+                    return
                 position = self.move(position, command)
-                if position == target:
-                    return (True, 0)
-                distance = abs(target[0] - position[0]) + \
-                    abs(target[1] - position[1])
-                if not bestDistance or bestDistance > distance:
-                    bestDistance = distance
-        return (False, bestDistance)
+                

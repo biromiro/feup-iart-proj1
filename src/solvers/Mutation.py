@@ -1,3 +1,5 @@
+import random
+
 class Mutation:
     @staticmethod
     def mutate_percent(percentage, mutator):

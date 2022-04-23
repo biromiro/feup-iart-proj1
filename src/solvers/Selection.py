@@ -11,7 +11,7 @@ class Selection:
     
     @staticmethod
     def random_parents(generation):
-        return elitist(1)(generation)
+        return Selection.elitist(1)(generation)
     
     @staticmethod
     def roulette(generation):

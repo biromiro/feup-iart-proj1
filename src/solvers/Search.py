@@ -32,7 +32,6 @@ class Search:
                 return currentNode
 
             if count == 100:
-                print(currentNode)
                 count = 0
             else:
                 count += 1
@@ -123,7 +122,6 @@ class Search:
 
             if condition(currentNode):
                 return currentNode
-            print(currentNode)
             edgeNodes = currentNode.child_states()
 
             for node in edgeNodes:
