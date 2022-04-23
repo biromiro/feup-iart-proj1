@@ -53,7 +53,7 @@ class State:
         return commands
 
     def is_final(self):
-        for position in self.board.walk():
+        for position in self.board.walk(self.commands):
             if position == self.board.goal:
                 return True
         return False

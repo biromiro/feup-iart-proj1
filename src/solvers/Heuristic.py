@@ -4,10 +4,11 @@ class Heuristic:
     @staticmethod
     def min_manhattan(state):
         best_distance = None
-        for position in state.board.walk():
+        for position in state.board.walk(state.commands):
             distance = abs(state.board.goal[0] - position[0]) + abs(state.board.goal[1] - position[1])
             if not best_distance or best_distance > distance:
                 best_distance = distance
+            
         return best_distance
 
     @staticmethod

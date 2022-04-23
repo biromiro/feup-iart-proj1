@@ -1,6 +1,6 @@
 import pygame
 from src.graphics.FontCache import FontCache
-from src.Button import Button, ButtonState
+from src.Button import ButtonState
 from src.graphics.Color import Color
 
 class ButtonView:

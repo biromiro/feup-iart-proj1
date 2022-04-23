@@ -59,6 +59,10 @@ class Board:
         position = self.start
         previous_iterations = set()
 
+        if len(commands) == 0:
+            yield position
+            return
+
         while position not in previous_iterations:
             previous_iterations.add(position)
             for command in commands:
@@ -66,4 +70,3 @@ class Board:
                 if position == self.goal:
                     return
                 position = self.move(position, command)
-                
