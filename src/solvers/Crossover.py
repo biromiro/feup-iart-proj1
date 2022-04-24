@@ -1,4 +1,5 @@
 import random
+from src.solvers.State import State
 
 class Crossover:
     @staticmethod

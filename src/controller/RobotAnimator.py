@@ -1,14 +1,13 @@
-from src.Controller import Controller
-from src.Robot import Robot
+from src.controller.Controller import Controller
+from src.model.Robot import Robot
 
 class RobotAnimator(Controller):
     STEP_DURATION_MS = 600
 
-    def __init__(self, board, commands):
-        self.steps = board.walk(commands)
+    def __init__(self, board, commands_input):
+        self.commands_input = commands_input
+        self.steps = board.walk(commands_input.commands)
         self.robot = Robot(next(self.steps))
-        self.num_commands = len(commands)
-        self.command_idx = -1
         self.time = 0
 
     def update(self, timepassed):
@@ -19,10 +18,11 @@ class RobotAnimator(Controller):
                 step = next(self.steps)
             except StopIteration:
                 self.robot.end_walk()
+                self.commands_input.no_highlight()
                 return True
             self.time -= RobotAnimator.STEP_DURATION_MS
-            self.command_idx = (self.command_idx + 1) % self.num_commands
-            self.robot.set_step(step, self.command_idx)
+            self.commands_input.highlight_next()
+            self.robot.set_step(step, self.commands_input.highlight == 0)
         
         animation_fraction = min(self.time / RobotAnimator.STEP_DURATION_MS, 1)
         self.robot.set_current_position(RobotAnimator.ease_function(animation_fraction))

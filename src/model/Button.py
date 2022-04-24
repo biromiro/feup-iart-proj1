@@ -6,7 +6,7 @@ class ButtonState(Enum):
     CLICKED = auto()
 
 class Button:
-    def __init__(self, text, callback):
-        self.text = text
+    def __init__(self, data, callback):
+        self.data = data
         self.callback = callback
         self.state = ButtonState.NORMAL

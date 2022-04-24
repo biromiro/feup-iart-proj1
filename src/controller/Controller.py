@@ -1,6 +1,5 @@
 from abc import abstractmethod
 
-
 class Controller:
     @abstractmethod
     def on_key_press(self, key):

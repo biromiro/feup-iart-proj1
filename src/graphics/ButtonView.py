@@ -1,6 +1,6 @@
 import pygame
 from src.graphics.FontCache import FontCache
-from src.Button import ButtonState
+from src.model.Button import ButtonState
 from src.graphics.Color import Color
 
 class ButtonView:
@@ -24,5 +24,5 @@ class ButtonView:
         pygame.draw.rect(display, ButtonView.BACKGROUND_COLOR[self.button.state], pygame.Rect(x, y, width, height), 0, 15)
         
         font = ButtonView.FONT.get(ButtonView.FONT_NAME, font_size)
-        text = font.render(self.button.text, True, ButtonView.TEXT_COLOR)
+        text = font.render(self.button.data, True, ButtonView.TEXT_COLOR)
         display.blit(text, text.get_rect(center=(x + width//2, y + height//2)))

@@ -1,75 +1,78 @@
+import pygame
+from src.model.CommandsInput import CommandsInput
 from src.solvers.Scheduler import Scheduler
 from src.solvers.Optimization import Optimization
 from src.solvers.Heuristic import Heuristic
-from src.ButtonListController import ButtonListController
+from src.controller.ButtonListController import ButtonListController
 from src.graphics.ButtonView import ButtonView
 from src.solvers.Search import Search
 from src.solvers.State import State
-from src.Direction import Direction
-from src.Board import Board
-from src.RobotAnimator import RobotAnimator
-from src.graphics import BoardView, CommandsView
-from src.Controller import Controller
-from src.Button import Button
+from src.controller.RobotAnimator import RobotAnimator
+from src.graphics.BoardView import BoardView
+from src.controller.Controller import Controller
+from src.model.Button import Button
+from src.controller.CommandsInputController import CommandsInputController
 
-class ScreenController(Controller):
-    def __init__(self):
-        # DEBUG (TODO remove)
-        def loadProblem(file):
-            width, height, moves = [int(value) for value in file.readline().split()]
-            horizontal_walls = [tuple(int(x) for x in coords.split(','))
-                                for coords in file.readline().split(';')]
-            vertical_walls = [tuple(int(x) for x in coords.split(','))
-                            for coords in file.readline().split(';')]
-
-            board = Board(width, height, moves)
-            for x, y in horizontal_walls:
-                board.add_wall(x, y, Direction.LEFT)
-            for x, y in vertical_walls:
-                board.add_wall(x, y, Direction.UP)
-            return board
-        with open("resources/problems/1.txt", 'r') as f:
-            self.board = loadProblem(f)
+class BoardScreenController(Controller):
+    def __init__(self, _push_screen, board, human_player):
+        self.board = board
+        self.human_player = human_player
         
-        self.boardView = BoardView(self.board)
-        self.commandsView = CommandsView([])
-
+        self.board_view = BoardView(self.board)
+        self.commands_panel = CommandsInputController(CommandsInput(human_player, human_player), (20, 650), (600, 50), self.page_animation)
         self.side_bar = None
-        self.boardAnimator = None
+        self.board_animator = None
 
-        self.page_main()
+        if self.human_player:
+            self.page_human()
+        else:
+            self.page_solvers()
 
-    def page_main(self):
-        self.boardView.robot = None
-        self.commandsView.robot = None
+    def page_human(self):
+        self.board_view.robot = None
+        self.commands_panel.robot = None
+
+        self.side_bar = ButtonListController(
+            [
+                Button('Run', self.page_animation),
+                Button('Another hint', self.commands_panel.input.next_hint) if self.commands_panel.input.hint else Button('Hint', self.page_solvers),
+            ], 
+            (640, 10), 30, (364, 50), 20, ButtonView,
+        )
+
+    def page_solvers(self):
+        self.board_view.robot = None
+        self.commands_panel.robot = None
         self.side_bar = ButtonListController(
             [
                 Button('Breadth First Search', lambda: self.page_search_solve(Search.bfs)),
                 Button('Iterative Deepening Search', lambda: self.page_search_solve(Search.it_deep)),
                 Button('Greedy Search', lambda: self.page_heuristic(Search.greedy)),
                 Button('A* Search', lambda: self.page_heuristic(Search.astar)),
-                Button('Simulated Annealing', lambda: self.page_scheduler()),
+                Button('Simulated Annealing', self.page_scheduler),
                 Button('Genetic Algorithm', lambda: print("TODO")),
             ], 
-            (640, 10), 30, (364, 50), 20, ButtonView
+            (640, 10), 30, (364, 50), 20, ButtonView,
+            title="Choose solver:",
+            back_action = self.page_human if self.human_player else None,
         )
     
     def page_heuristic(self, algorithm):
-        self.boardView.robot = None
-        self.commandsView.robot = None
+        self.board_view.robot = None
+        self.commands_panel.robot = None
         self.side_bar = ButtonListController(
             [
                 Button('Manhattan Distance', lambda: self.page_search_solve(algorithm, heuristic=Heuristic.min_manhattan)),
                 Button('Mandatory Directions', lambda: self.page_search_solve(algorithm, heuristic=Heuristic.mandatory_directions)),
             ], 
             (640, 10), 30, (364, 50), 20, ButtonView,
-            back_action=lambda: self.page_main(),
+            back_action=self.page_solvers,
             title="Choose heuristic:",
         )
     
     def page_scheduler(self):
-        self.boardView.robot = None
-        self.commandsView.robot = None
+        self.board_view.robot = None
+        self.commands_panel.robot = None
         self.side_bar = ButtonListController(
             [
                 Button('Exponential Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.exponential_multiplicative_cooling)),
@@ -79,7 +82,7 @@ class ScreenController(Controller):
                 Button('Adaptive Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.adaptive_cooling, adaptive=True)),
             ], 
             (640, 10), 30, (364, 50), 20, ButtonView,
-            back_action=lambda: self.page_main(),
+            back_action=self.page_solvers,
             title="Choose schedule:",
         )
 
@@ -93,11 +96,18 @@ class ScreenController(Controller):
         self.page_solve(Optimization.simulated_annealing(initial_state, schedule, **kwargs))
 
     def page_solve(self, solution):
-        self.commandsView.commands = solution.commands
-        self.boardAnimator = RobotAnimator(self.board, solution.commands)
-        self.boardView.robot = self.boardAnimator.robot
-        self.commandsView.robot = self.boardAnimator.robot
+        if self.human_player:
+            self.commands_panel.input.hint = solution.commands
+            self.commands_panel.input.next_hint()
+            self.page_human()
+        else:
+            self.commands_panel.input.commands = solution.commands
+            self.page_animation()
    
+    def page_animation(self):
+        self.board_animator = RobotAnimator(self.board, self.commands_panel.input)
+        self.board_view.robot = self.board_animator.robot
+
     def on_mouse_press(self, pos):
         self.side_bar.on_mouse_press(pos)
     
@@ -108,15 +118,12 @@ class ScreenController(Controller):
         self.side_bar.on_mouse_move(pos)
 
     def draw(self, display):
-        self.boardView.draw(display, (20, 10), (600, 600))
-        self.commandsView.draw(display, (20, 650), (600, 50))
+        self.board_view.draw(display, (20, 10), (600, 600))
+        self.commands_panel.draw(display)
         self.side_bar.draw(display)
     
     def update(self, timepassed):
-        if self.boardAnimator:
-            is_finished = self.boardAnimator.update(timepassed)
+        if self.board_animator:
+            is_finished = self.board_animator.update(timepassed)
             if is_finished:
-                self.boardAnimator = None
-                # self.commandsView.commands = []
-                # self.boardView.robot = None
-                # self.commandsView.robot = None
+                self.board_animator = None

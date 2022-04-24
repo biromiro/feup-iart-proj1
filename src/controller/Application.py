@@ -1,15 +1,18 @@
 import pygame
-from src.ScreenController import ScreenController
-import src.graphics # initializes pygame
+from src.controller.screen.MainMenuScreenController import MainMenuScreenController
 from src.graphics.Color import Color
 import sys
+
+pygame.init()
+pygame.font.init()
 
 class Application:
     def __init__(self):
         self.framerate = 60
         self.width = 1024
         self.height = 720
-        self.controller = ScreenController()
+        self.screen_stack = []
+        self.push_screen(MainMenuScreenController)
     
     def run(self):
         display = pygame.display.set_mode((self.width, self.height))
@@ -18,7 +21,7 @@ class Application:
         timepassed = 0
         while True:
             self.handle_events()
-            self.controller.update(timepassed)
+            self.screen_stack[-1].update(timepassed)
             self.draw(display)
             timepassed = clock.tick(self.framerate)
     
@@ -27,15 +30,25 @@ class Application:
             if event.type == pygame.QUIT: 
                 sys.exit()  
             elif event.type == pygame.KEYDOWN:
-                self.controller.on_key_press(event.key)
+                if event.key == pygame.K_ESCAPE:
+                    self.pop_screen()
+                else:
+                    self.screen_stack[-1].on_key_press(event.key)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                self.controller.on_mouse_press(event.pos)
+                self.screen_stack[-1].on_mouse_press(event.pos)
             elif event.type == pygame.MOUSEBUTTONUP:
-                self.controller.on_mouse_release(event.pos)
+                self.screen_stack[-1].on_mouse_release(event.pos)
             elif event.type == pygame.MOUSEMOTION:
-                self.controller.on_mouse_move(event.pos)
+                self.screen_stack[-1].on_mouse_move(event.pos)
     
     def draw(self, display):
         display.fill(Color.WHITE)
-        self.controller.draw(display)
+        self.screen_stack[-1].draw(display)
         pygame.display.flip()
+
+    def push_screen(self, controller, *args, **kwargs):
+        self.screen_stack.append(controller(self.push_screen, *args, **kwargs))
+
+    def pop_screen(self):
+        if len(self.screen_stack) > 1:
+            self.screen_stack.pop()

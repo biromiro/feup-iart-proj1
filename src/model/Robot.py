@@ -3,15 +3,13 @@ class Robot:
         self.from_position = position
         self.target_position = position
         self.current_position = position
-        self.command_idx = -1
         self.previous_iterations = []
 
-    def set_step(self, position, command_idx):
+    def set_step(self, position, add_to_previous_iterations=False):
         self.from_position = self.target_position
         self.current_position = self.from_position
         self.target_position = position
-        self.command_idx = command_idx
-        if self.command_idx == 0:
+        if add_to_previous_iterations:
             self.previous_iterations.append(self.from_position)
         
     def set_current_position(self, fraction):
@@ -23,4 +21,3 @@ class Robot:
     def end_walk(self):
         self.from_position = self.target_position
         self.current_position = self.from_position
-        self.command_idx = -1

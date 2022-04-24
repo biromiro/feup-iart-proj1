@@ -1,4 +1,3 @@
-import pygame
 from src.graphics.FontCache import FontCache
 from src.graphics.Color import Color
 

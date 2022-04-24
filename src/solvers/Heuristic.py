@@ -1,4 +1,4 @@
-from src.Direction import Direction
+from src.model.Direction import Direction
 
 class Heuristic:
     @staticmethod

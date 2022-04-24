@@ -1,7 +1,6 @@
 from enum import Enum, auto
 import random
 
-
 class Direction(Enum):
     RIGHT = auto()
     UP = auto()

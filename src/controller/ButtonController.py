@@ -1,5 +1,5 @@
-from src.Button import ButtonState
-from src.Controller import Controller
+from src.model.Button import ButtonState
+from src.controller.Controller import Controller
 
 class ButtonController(Controller):
     def __init__(self, button, position, size, font_size, view):

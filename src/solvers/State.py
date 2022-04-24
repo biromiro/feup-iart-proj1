@@ -1,5 +1,5 @@
 from src.solvers.Heuristic import Heuristic
-from src.Direction import Direction
+from src.model.Direction import Direction
 import random
 
 

@@ -1,4 +1,5 @@
 import random
+from src.model.Direction import Direction
 
 class Mutation:
     @staticmethod
