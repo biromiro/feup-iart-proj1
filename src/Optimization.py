@@ -41,7 +41,7 @@ class Optimization:
                         f = fsi
 
     @staticmethod
-    def genetic_algorithms(gen_zero, selector, crosser, mutator, terminator):
+    def genetic_algorithms(gen_zero, selector, crosser, mutator, terminator, hold_best=None):
         gen_size = len(gen_zero)
         cur_generation = gen_zero
         next_generation = []
@@ -53,15 +53,19 @@ class Optimization:
                 if not best or fitness < best[1]:
                     best = (individual, fitness)
             return best[0]
-        
+
         while not terminator(cur_generation):
-            print("new generation")
+            print("Generation best:", fittest(cur_generation))
             for _ in range(gen_size):
                 parent1, parent2 = selector(cur_generation)
                 offspring = crosser(parent1, parent2)
                 offspring = mutator(offspring)
                 next_generation.append(offspring)
-            cur_generation = next_generation
-        
+            if hold_best:
+                cur_generation = hold_best(
+                    cur_generation) + next_generation
+            else:
+                cur_generation = next_generation
+
+            next_generation = []
         return fittest(cur_generation)
-            

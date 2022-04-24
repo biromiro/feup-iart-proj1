@@ -3,10 +3,10 @@ import random
 
 
 class Direction(Enum):
-    RIGHT = auto()
-    UP = auto()
     LEFT = auto()
+    RIGHT = auto()
     DOWN = auto()
+    UP = auto()
 
     @staticmethod
     def random():

@@ -12,6 +12,7 @@ from src.Search import Search
 from src.Heuristic import Heuristic
 from src.Graphics import Graphics
 
+
 def loadProblem(file):
     width, height, moves = [int(value) for value in file.readline().split()]
     horizontal_walls = [tuple(int(x) for x in coords.split(','))
@@ -26,7 +27,7 @@ def loadProblem(file):
         board.add_wall(x, y, Direction.UP)
     return board
 
-#with open("problems/20.txt", 'r') as f:
+# with open("problems/20.txt", 'r') as f:
 #    board = loadProblem(f)
 #    board.display()
 #    initialState = board.initial_guess()
@@ -40,38 +41,45 @@ def loadProblem(file):
 #    animator = BoardAnimator()
 #    board.walk(solution, animator)
 
+
 def main():
-    #Graphics().run()
+    # Graphics().run()
     with open("problems/1.txt", 'r') as f:
         board = loadProblem(f)
 
-    mutator = Mutation.mutate_percent(5, Mutation.random_corruption)
-    terminator = Termination().iteration_cap(20)
-    solution = Optimization.genetic_algorithms(Selection.generation_zero(20, 4, board), Selection.roulette, Crossover.random_origin, mutator, terminator)
+    mutator = Mutation.mutate_percent(15, Mutation.random_corruption)
+    terminator = Termination().optimal(4)
+    hold_best = Selection.best_n(10)
+    solution = Optimization.genetic_algorithms(Selection.generation_zero(
+        50, 2, board), Selection.roulette, Crossover.random_origin, mutator, terminator, hold_best)
 
     print(solution)
+
+    animator = BoardAnimator()
+    board.walk(solution, animator)
+
 
 if __name__ == "__main__":
     main()
 
-#with open("problems/1.txt", 'r') as f:
+# with open("problems/1.txt", 'r') as f:
 #    board = loadProblem(f)
 #    board.display()
 #    initialState = board.initial_guess()
     #gen_zero = []
-    #for _ in range(10):
+    # for _ in range(10):
     #    individual = State([], board)
     #    for _ in range(4):
     #        individual.commands.append(Direction.random())
     #    gen_zero.append(individual)
-    
+
     #solution = Optimization.genetic_algorithms(gen_zero, random_selector, random_crosser, mutate_50, solution_1)
     # findBestState(board, state)
     #solution = Search.bfs(initialState, lambda state: state.is_final())
     # solution = Search.astar(
     #    initialState, lambda state: state.is_final(), Heuristic.mandatory_directions)
 
-    #solution = Optimization.simulated_annealing(
+    # solution = Optimization.simulated_annealing(
     #    initialState, Scheduler.exponential_multiplicative_cooling)
 #    animator = BoardAnimator()
 #    board.walk(solution, animator)
