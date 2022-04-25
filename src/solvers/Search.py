@@ -60,9 +60,9 @@ class Search:
             if child in visited:
                 continue
 
-            solved, remaining = yield from Search.dls(child, condition, depth - 1,
+            solved, _ = yield from Search.dls(child, condition, depth - 1,
                                       visited + [node])
-            if not remaining:
+            if solved:
                 return (solved, False)
 
         return (False, visited == [])
@@ -70,14 +70,10 @@ class Search:
     @staticmethod
     def it_deep(initial, condition):
         curDepth = 1
-
         while True:
-
             _, remaining = yield from Search.dls(initial, condition, curDepth)
-
             if not remaining:
                 return
-
             curDepth += 1
 
     @staticmethod

@@ -10,13 +10,14 @@ class Optimization:
         fsi = state.evaluate()
         f = fsi
         for t in itertools.count(start=1):
+            yield state
             if adaptive:
                 temp = schedule(temp, t, fsi, f)
             else:
                 temp = schedule(temp, t)
 
             if round(temp, 4) == 0:
-                return state
+                return
 
             if state.board.preferred_moves and use_preferred_moves:
                 next_state = state.preferred_moves_neighbour()

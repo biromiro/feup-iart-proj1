@@ -13,7 +13,7 @@ class SolverAnimator(Controller):
         self.time = 0
         if self.obfuscate:
             self.real_step = None
-            self.next_obfuscation = 200
+            self.next_obfuscation = 100
 
     def update(self, timepassed):
         self.time += timepassed
