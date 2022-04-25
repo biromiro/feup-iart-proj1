@@ -44,39 +44,39 @@ class Search:
         return None
 
     @staticmethod
-    def dls(node, condition, depth, visited=[]):
+    def dls(node, condition, depth, visited=None):
+        if not visited:
+            visited = []
 
         if node in visited:
-            return (None, False)
+            return (False, False)
+        yield node
         if condition(node):
-            return (node, False)
+            return (True, False)
         if depth == 0:
-            return (None, visited != [])
+            return (False, visited != [])
 
         for child in node.child_states():
             if child in visited:
                 continue
 
-            finalNode, _ = Search.dls(child, condition, depth - 1,
+            solved, remaining = yield from Search.dls(child, condition, depth - 1,
                                       visited + [node])
-            if finalNode:
-                return (finalNode, False)
+            if not remaining:
+                return (solved, False)
 
-        return (None, visited == [])
+        return (False, visited == [])
 
     @staticmethod
     def it_deep(initial, condition):
-
-        path = None
         curDepth = 1
 
         while True:
 
-            path, remaining = Search.dls(initial, condition, curDepth)
-            if path:
-                return path
+            _, remaining = yield from Search.dls(initial, condition, curDepth)
+
             if not remaining:
-                return None
+                return
 
             curDepth += 1
 
@@ -94,17 +94,17 @@ class Search:
             if currentNode in visited:
                 continue
 
+            yield currentNode
+
             visited.append(currentNode)
 
             if condition(currentNode):
-                return currentNode
+                return
 
             edgeNodes = currentNode.child_states()
 
             for node in edgeNodes:
                 nodesToVisit.put((heuristic(node), node))
-
-        return None
 
     @staticmethod
     def astar(initial, condition, heuristic):
@@ -118,15 +118,15 @@ class Search:
 
             if currentNode in visited:
                 continue
+        
+            yield currentNode
 
             visited.append(currentNode)
 
             if condition(currentNode):
-                return currentNode
+                return
             edgeNodes = currentNode.child_states()
 
             for node in edgeNodes:
                 heuristicNode = len(node.commands) + heuristic(node)
                 nodesToVisit.put((heuristicNode, node))
-
-        return None

@@ -19,6 +19,7 @@ class CommandsInputView:
         InputState.FOCUSED: Color.PRIMARY
     }
     SHADOW_COLOR = Color.GRAY
+    COMMANDS_LIMIT = 50
 
     def __init__(self, commands_input):
         self.commands_input = commands_input
@@ -33,19 +34,24 @@ class CommandsInputView:
         if self.commands_input.enabled:
             pygame.draw.rect(display, CommandsInputView.BORDER_COLOR[self.commands_input.state], pygame.Rect(x, y, width, height), 5, 10)
 
-        for idx, command in enumerate(self.commands_input.commands):
-            is_same_font = self.last_command_len == len(self.commands_input.commands)
-            self.last_command_len = len(self.commands_input.commands)
+        commands = self.commands_input.commands
+        if len(self.commands_input.commands) > CommandsInputView.COMMANDS_LIMIT:
+            commands = self.commands_input.commands[:CommandsInputView.COMMANDS_LIMIT] + ['...']
+
+        for idx, command in enumerate(commands):
+            len_commands = min(CommandsInputView.COMMANDS_LIMIT, len(self.commands_input.commands))
+            is_same_font = self.last_command_len == len_commands
+            self.last_command_len = len_commands
 
             font = self.font.get(CommandsInputView.FONT_PATH, height) if not is_same_font else self.font.cache
-            highlight = self.commands_input.highlight == idx
+            highlight = self.commands_input.highlight == idx or (self.commands_input.highlight > CommandsInputView.COMMANDS_LIMIT and idx == CommandsInputView.COMMANDS_LIMIT)
             color = CommandsInputView.HIGHLIGHT_COLOR if highlight else CommandsInputView.TEXT_COLOR
             if self.commands_input.enabled and idx < self.commands_input.hint_shown:
                 color = CommandsInputView.HINT_COLOR
             text = font.render(str(command), True, color)
 
             tw = text.get_width()
-            n = len(self.commands_input.commands)
+            n = len_commands
             s = int((width - tw*n)/(n + 1))
             if s <= 5 and not is_same_font:
                 s = 5

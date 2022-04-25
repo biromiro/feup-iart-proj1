@@ -17,7 +17,9 @@ class SolverAnimator(Controller):
 
     def update(self, timepassed):
         self.time += timepassed
-        while self.time >= SolverAnimator.STEP_DURATION_MS:
+        max_iters = 25 # forces a slowdown if framerate can't keep up
+        while self.time >= SolverAnimator.STEP_DURATION_MS and max_iters > 0:
+            max_iters -= 1
             step = None
             try:
                 step = next(self.solver).commands
