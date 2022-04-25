@@ -4,6 +4,10 @@ import math
 class Scheduler:
 
     @staticmethod
+    def linear_cooling(temperature, cycle=None, alpha=0.999):
+        return temperature * alpha
+
+    @staticmethod
     def exponential_multiplicative_cooling(temperature, cycle, alpha=0.999999):
         return temperature * alpha ** cycle
 

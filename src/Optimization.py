@@ -1,21 +1,22 @@
 import itertools
 import random
 import math
+its = 0
 
 
 class Optimization:
     @staticmethod
-    def simulated_annealing(state, schedule, adaptive=False, use_preferred_moves=False):
-        temp = 1000
+    def simulated_annealing(state, schedule, temp, adaptive=False, use_preferred_moves=False):
         fsi = state.evaluate()
         f = fsi
         for t in itertools.count(start=1):
+            print(state.evaluate())
             if adaptive:
                 temp = schedule(temp, t, fsi, f)
             else:
                 temp = schedule(temp, t)
 
-            if round(temp, 4) == 0:
+            if round(temp, 5) == 0:
                 return state
 
             if state.board.preferred_moves and use_preferred_moves:

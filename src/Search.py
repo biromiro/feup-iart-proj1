@@ -2,6 +2,7 @@ from queue import PriorityQueue
 
 
 class Search:
+
     @staticmethod
     def getPath(node):
         path = [node]
@@ -32,7 +33,6 @@ class Search:
                 return currentNode
 
             if count == 100:
-                print(currentNode)
                 count = 0
             else:
                 count += 1
@@ -40,12 +40,10 @@ class Search:
             nodesToVisit += currentNode.child_states()
 
             visited.append(currentNode)
-
         return None
 
     @staticmethod
     def dls(node, condition, depth, visited=[]):
-
         if node in visited:
             return (None, False)
         if condition(node):
@@ -82,7 +80,6 @@ class Search:
 
     @staticmethod
     def greedy(initial, condition, heuristic):
-
         nodesToVisit = PriorityQueue()
         nodesToVisit.put((heuristic(initial), initial))
 
@@ -90,7 +87,6 @@ class Search:
 
         while not nodesToVisit.empty():
             _, currentNode = nodesToVisit.get()
-
             if currentNode in visited:
                 continue
 
@@ -108,7 +104,6 @@ class Search:
 
     @staticmethod
     def astar(initial, condition, heuristic):
-
         nodesToVisit = PriorityQueue()
         nodesToVisit.put((heuristic(initial), initial))
         visited = []
@@ -123,7 +118,7 @@ class Search:
 
             if condition(currentNode):
                 return currentNode
-            print(currentNode)
+
             edgeNodes = currentNode.child_states()
 
             for node in edgeNodes:

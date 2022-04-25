@@ -95,6 +95,9 @@ class Board:
 
         return State([], self)
 
+    def empty_state(self):
+        return State([], self)
+
     def walk(self, state, animator=None):
         start = self.start
         target = self.goal

@@ -1,3 +1,4 @@
+from colorama import init
 from src.Board import Board
 from src.BoardAnimator import BoardAnimator
 from src.Direction import Direction
@@ -27,36 +28,39 @@ def loadProblem(file):
         board.add_wall(x, y, Direction.UP)
     return board
 
-# with open("problems/20.txt", 'r') as f:
-#    board = loadProblem(f)
-#    board.display()
-#    initialState = board.initial_guess()
-#    # findBestState(board, state)
-#    #solution = Search.bfs(initialState, lambda state: state.is_final())
-#    # solution = Search.astar(
-#    #    initialState, lambda state: state.is_final(), Heuristic.mandatory_directions)
-#
-#    solution = Optimization.simulated_annealing(
-#        initialState, Scheduler.exponential_multiplicative_cooling)
-#    animator = BoardAnimator()
-#    board.walk(solution, animator)
 
+# with open("problems/16.txt", 'r') as f:
+#    board = loadProblem(f)
+    # board.display()
+#    initialState = board.empty_state()
+    # findBestState(board, state)
+    # solution = Search.it_deep(initialState, lambda state: state.is_final())
+#    solution = Search.astar(
+#        initialState, lambda state: state.is_final(), Heuristic.min_manhattan)
+
+    # solution = Optimization.simulated_annealing(
+#    print(solution)
 
 def main():
     # Graphics().run()
-    with open("problems/1.txt", 'r') as f:
+    with open("problems/16.txt", 'r') as f:
         board = loadProblem(f)
 
-    mutator = Mutation.mutate_percent(15, Mutation.random_corruption)
-    terminator = Termination().optimal(4)
-    hold_best = Selection.best_n(10)
-    solution = Optimization.genetic_algorithms(Selection.generation_zero(
-        50, 2, board), Selection.roulette, Crossover.random_origin, mutator, terminator, hold_best)
+    #mutator = Mutation.mutate_percent(15, Mutation.random_corruption)
+    #terminator = Termination().optimal(4)
+    #hold_best = Selection.best_n(10)
+    # solution = Optimization.genetic_algorithms(Selection.generation_zero(
+    #    50, 2, board), Selection.roulette, Crossover.random_origin, mutator, terminator, hold_best)
 
-    print(solution)
-
-    animator = BoardAnimator()
-    board.walk(solution, animator)
+    # print(solution)
+    #initialState = board.initial_guess()
+    # solution = Optimization.simulated_annealing(
+    #    initialState, Scheduler.linear_cooling, 10000)
+    # print(solution)
+    for i in range(1, 45335):
+        print(i)
+    #animator = BoardAnimator()
+    #board.walk(solution, animator)
 
 
 if __name__ == "__main__":
@@ -66,16 +70,16 @@ if __name__ == "__main__":
 #    board = loadProblem(f)
 #    board.display()
 #    initialState = board.initial_guess()
-    #gen_zero = []
+    # gen_zero = []
     # for _ in range(10):
     #    individual = State([], board)
     #    for _ in range(4):
     #        individual.commands.append(Direction.random())
     #    gen_zero.append(individual)
 
-    #solution = Optimization.genetic_algorithms(gen_zero, random_selector, random_crosser, mutate_50, solution_1)
+    # solution = Optimization.genetic_algorithms(gen_zero, random_selector, random_crosser, mutate_50, solution_1)
     # findBestState(board, state)
-    #solution = Search.bfs(initialState, lambda state: state.is_final())
+    # solution = Search.bfs(initialState, lambda state: state.is_final())
     # solution = Search.astar(
     #    initialState, lambda state: state.is_final(), Heuristic.mandatory_directions)
 
