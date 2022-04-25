@@ -2,6 +2,7 @@ import math
 
 
 class Scheduler:
+    """Schedulers for simulated annealing."""
 
     @staticmethod
     def linear_cooling(temperature, cycle=None, alpha=0.999):

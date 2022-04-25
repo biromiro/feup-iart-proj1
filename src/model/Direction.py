@@ -2,6 +2,7 @@ from enum import Enum, auto
 import random
 
 class Direction(Enum):
+    """Encodes the direction of a command."""
     RIGHT = auto()
     UP = auto()
     LEFT = auto()

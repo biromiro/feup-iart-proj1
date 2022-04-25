@@ -7,6 +7,7 @@ class InputState(Enum):
     FOCUSED = auto()
 
 class CommandsInput:
+    """Represents a UI input box for commands."""
     NO_HIGHLIGHT = -1
 
     def __init__(self, enabled=True, focused=False):

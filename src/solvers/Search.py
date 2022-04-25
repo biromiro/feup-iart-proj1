@@ -2,13 +2,14 @@ from queue import PriorityQueue
 
 
 class Search:
+    """Search algorithms. The algorithms yield the sequence of every visited state."""
 
     @staticmethod
     def bfs(initial, condition):
-
+        """Breadth-first search."""
         nodesToVisit = [initial]
         visited = []
-        count = 0
+
         while nodesToVisit:
             currentNode = nodesToVisit.pop(0)
 
@@ -18,11 +19,6 @@ class Search:
             if condition(currentNode):
                 return
 
-            if count == 100:
-                count = 0
-            else:
-                count += 1
-
             nodesToVisit += currentNode.child_states()
 
             visited.append(currentNode)
@@ -30,6 +26,7 @@ class Search:
 
     @staticmethod
     def dls(node, condition, depth, visited=None):
+        """Depth-limited search. Returns whether a solution was found and whether there are still nodes that should be visited."""
         if not visited:
             visited = []
 
@@ -54,6 +51,7 @@ class Search:
 
     @staticmethod
     def it_deep(initial, condition):
+        """Iterative deepening search."""
         curDepth = 1
         while True:
             _, remaining = yield from Search.dls(initial, condition, curDepth)
@@ -63,9 +61,9 @@ class Search:
 
     @staticmethod
     def greedy(initial, condition, heuristic):
+        """Greedy search."""
         nodesToVisit = PriorityQueue()
         nodesToVisit.put((heuristic(initial), initial))
-
         visited = []
 
         while not nodesToVisit.empty():
@@ -87,13 +85,13 @@ class Search:
 
     @staticmethod
     def astar(initial, condition, heuristic):
+        """A* search."""
         nodesToVisit = PriorityQueue()
         nodesToVisit.put((heuristic(initial), initial))
         visited = []
 
         while not nodesToVisit.empty():
             _, currentNode = nodesToVisit.get()
-
             if currentNode in visited:
                 continue
         
@@ -103,6 +101,7 @@ class Search:
 
             if condition(currentNode):
                 return
+
             edgeNodes = currentNode.child_states()
 
             for node in edgeNodes:

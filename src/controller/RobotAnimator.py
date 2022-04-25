@@ -25,7 +25,7 @@ class RobotAnimator(Controller):
             self.robot.set_step(step, self.commands_input.highlight == 0)
         
         animation_fraction = min(self.time / RobotAnimator.STEP_DURATION_MS, 1)
-        self.robot.set_current_position(RobotAnimator.ease_function(animation_fraction))
+        self.robot.set_current_position(RobotAnimator.ease_function(animation_fraction)) # the ease function makes the animation smoother
         return False
 
     @staticmethod

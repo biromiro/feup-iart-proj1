@@ -1,4 +1,5 @@
 class Robot:
+    """Represents the robot for UI animations."""
     def __init__(self, position):
         self.from_position = position
         self.target_position = position
