@@ -28,8 +28,9 @@ class Search:
 
             if currentNode in visited:
                 continue
+            yield currentNode
             if condition(currentNode):
-                return currentNode
+                return
 
             if count == 100:
                 count = 0

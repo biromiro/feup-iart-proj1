@@ -1,4 +1,5 @@
 import pygame
+from src.controller.SolverAnimator import SolverAnimator
 from src.model.CommandsInput import CommandsInput
 from src.solvers.Scheduler import Scheduler
 from src.solvers.Optimization import Optimization
@@ -22,6 +23,7 @@ class BoardScreenController(Controller):
         self.commands_panel = CommandsInputController(CommandsInput(human_player, human_player), (20, 650), (600, 50), self.page_animation)
         self.side_bar = None
         self.board_animator = None
+        self.solver_animator = None
 
         if self.human_player:
             self.page_human()
@@ -86,7 +88,28 @@ class BoardScreenController(Controller):
         initial_state = initial_state or State.initial_guess(self.board)
         self.page_solve(Optimization.simulated_annealing(initial_state, schedule, **kwargs))
 
-    def page_solve(self, solution):
+    def page_solve(self, solver):
+        current_commands = self.commands_panel.input.commands
+        self.commands_panel.input.enabled = False
+        self.solver_animator = SolverAnimator(solver, self.commands_panel.input, self.human_player, self.board.preferred_moves)
+
+        def cancel():
+            self.solver_animator = None
+            self.commands_panel.input.commands = current_commands
+            if self.human_player:
+                self.commands_panel.enable(True)
+                self.page_human()
+            else:
+                self.page_solvers()
+
+        self.side_bar = ButtonListController(
+            [
+                Button('Cancel solver', cancel),
+            ], 
+            (640, 10), 30, (364, 50), 20, ButtonView,
+        )
+
+    def page_solution(self, solution):
         if self.human_player:
             self.commands_panel.input.hint = solution.commands
             self.commands_panel.input.next_hint()
@@ -145,3 +168,9 @@ class BoardScreenController(Controller):
             is_finished = self.board_animator.update(timepassed)
             if is_finished:
                 self.board_animator = None
+        if self.solver_animator:
+            is_finished = self.solver_animator.update(timepassed)
+            if is_finished:
+                self.solver_animator = None
+                self.commands_panel.enable(True)
+                self.page_solution(self.commands_panel.input)
