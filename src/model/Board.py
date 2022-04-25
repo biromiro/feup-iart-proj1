@@ -70,3 +70,4 @@ class Board:
                 if position == self.goal:
                     return
                 position = self.move(position, command)
+        yield position

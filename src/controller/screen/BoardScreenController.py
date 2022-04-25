@@ -29,9 +29,6 @@ class BoardScreenController(Controller):
             self.page_solvers()
 
     def page_human(self):
-        self.board_view.robot = None
-        self.commands_panel.robot = None
-
         self.side_bar = ButtonListController(
             [
                 Button('Run', self.page_animation),
@@ -41,8 +38,6 @@ class BoardScreenController(Controller):
         )
 
     def page_solvers(self):
-        self.board_view.robot = None
-        self.commands_panel.robot = None
         self.side_bar = ButtonListController(
             [
                 Button('Breadth First Search', lambda: self.page_search_solve(Search.bfs)),
@@ -58,8 +53,6 @@ class BoardScreenController(Controller):
         )
     
     def page_heuristic(self, algorithm):
-        self.board_view.robot = None
-        self.commands_panel.robot = None
         self.side_bar = ButtonListController(
             [
                 Button('Manhattan Distance', lambda: self.page_search_solve(algorithm, heuristic=Heuristic.min_manhattan)),
@@ -71,8 +64,6 @@ class BoardScreenController(Controller):
         )
     
     def page_scheduler(self):
-        self.board_view.robot = None
-        self.commands_panel.robot = None
         self.side_bar = ButtonListController(
             [
                 Button('Exponential Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.exponential_multiplicative_cooling)),
@@ -105,16 +96,43 @@ class BoardScreenController(Controller):
             self.page_animation()
    
     def page_animation(self):
+        if len(self.commands_panel.input.commands) == 0:
+            return
+        
+        self.commands_panel.input.enabled = False
         self.board_animator = RobotAnimator(self.board, self.commands_panel.input)
         self.board_view.robot = self.board_animator.robot
 
+        def stop_animation():
+            self.board_view.robot = None
+            self.board_animator = None
+            if self.human_player:
+                self.commands_panel.enable(True)
+                self.page_human()
+            else:
+                self.commands_panel.input.no_highlight()
+                self.page_solvers()
+
+        self.side_bar = ButtonListController(
+            [
+                Button('Stop animation', stop_animation),
+            ], 
+            (640, 10), 30, (364, 50), 20, ButtonView,
+        )
+
+    def on_key_press(self, key):
+        self.commands_panel.on_key_press(key)
+
     def on_mouse_press(self, pos):
+        self.commands_panel.on_mouse_press(pos)
         self.side_bar.on_mouse_press(pos)
     
     def on_mouse_release(self, pos):
+        self.commands_panel.on_mouse_release(pos)
         self.side_bar.on_mouse_release(pos)
 
     def on_mouse_move(self, pos):
+        self.commands_panel.on_mouse_move(pos)
         self.side_bar.on_mouse_move(pos)
 
     def draw(self, display):

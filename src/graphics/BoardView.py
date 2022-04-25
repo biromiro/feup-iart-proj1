@@ -58,3 +58,10 @@ class BoardView:
                 int(boardy + cell_size*(self.robot.current_position[1] + 0.5))
             )
             RobotView().draw(display, robot_position, (cell_size * 0.95, cell_size * 0.95))
+
+            for visited in self.robot.previous_iterations:
+                visited_position = (
+                    int(boardx + cell_size*(visited[0] + 0.5)), 
+                    int(boardy + cell_size*(visited[1] + 0.5))
+                )
+                pygame.draw.circle(display, Color.RED, visited_position, int(cell_size*0.05))

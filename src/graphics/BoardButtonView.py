@@ -31,5 +31,5 @@ class BoardButtonView:
         
 
         font = BoardButtonView.FONT.get(BoardButtonView.FONT_NAME, font_size)
-        text = font.render(f"{self.button.data.width}x{self.button.data.height}", True, BoardButtonView.TEXT_COLOR)
+        text = font.render(f"{self.button.data.width}x{self.button.data.height}   ({self.button.data.preferred_moves} moves)", True, BoardButtonView.TEXT_COLOR)
         display.blit(text, text.get_rect(center=(x + width//2, y + board_height + int(font_size*0.75))))

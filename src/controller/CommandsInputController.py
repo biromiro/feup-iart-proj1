@@ -11,7 +11,14 @@ class CommandsInputController(Controller):
         self.position = position
         self.size = size
         self.callback = callback
+        self.focused = commands_input.state == InputState.FOCUSED
     
+    def enable(self, focused=False):
+        self.focused = focused
+        self.input.enabled = True
+        self.input.no_highlight()
+        self.input.state = InputState.FOCUSED if focused else InputState.NORMAL
+
     def contains(self, pos):
         return (
             pos[0] >= self.position[0] and
@@ -23,23 +30,29 @@ class CommandsInputController(Controller):
     def on_mouse_press(self, pos):
         if self.contains(pos):
             self.input.state = InputState.CLICKED
+        else:
+            self.input.state = InputState.NORMAL
+            self.focused = False
     
     def on_mouse_release(self, pos):
         if self.contains(pos):
             if self.input.state == InputState.CLICKED:
                 self.input.state = InputState.FOCUSED
+                self.focused = True
             self.input.state = InputState.HOVERED
         else:
-            self.input.state = InputState.NORMAL
+            self.input.state = InputState.FOCUSED if self.focused else InputState.NORMAL
 
     def on_mouse_move(self, pos):
         if self.contains(pos):
             if self.input.state != InputState.CLICKED:
                 self.input.state = InputState.HOVERED
-        else:
-            self.input.state = InputState.NORMAL
+        elif self.input.state:
+            self.input.state = InputState.FOCUSED if self.focused else InputState.NORMAL
 
     def on_key_press(self, key):
+        if not self.focused:
+            return
         if key == pygame.K_u:
             self.input.commands.append(Direction.UP)
         elif key == pygame.K_d:
@@ -49,10 +62,10 @@ class CommandsInputController(Controller):
         elif key == pygame.K_r:
             self.input.commands.append(Direction.RIGHT)
         elif key == pygame.K_BACKSPACE:
-            if len(self.input.commands) > 0:
+            if len(self.input.commands) > self.input.hint_shown:
                 self.input.commands.pop()
         elif key == pygame.K_RETURN:
-            self.callback(self.input)
+            self.callback()
 
     def draw(self, display):
         self.view.draw(display, self.position, self.size)
