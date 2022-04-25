@@ -4,21 +4,6 @@ from queue import PriorityQueue
 class Search:
 
     @staticmethod
-    def getPath(node):
-        path = [node]
-        currentNode = node
-
-        while True:
-            currentNode = currentNode.previousNode
-            if not currentNode:
-                break
-            path.append(currentNode)
-
-        path.reverse()
-
-        return path
-
-    @staticmethod
     def bfs(initial, condition):
 
         nodesToVisit = [initial]

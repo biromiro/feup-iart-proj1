@@ -42,8 +42,11 @@ class Selection:
             fitnesses.append(fitness)
             total_fitness += fitness
 
-        roll1 = random.randrange(total_fitness)
-        roll2 = random.randrange(total_fitness)
+        roll1 = 0
+        roll2 = 0
+        if total_fitness > 0:
+            roll1 = random.randrange(total_fitness)
+            roll2 = random.randrange(total_fitness)
         parent1 = None
         parent2 = None
         for individual, fitness in zip(generation, fitnesses):

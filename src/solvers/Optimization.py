@@ -55,17 +55,18 @@ class Optimization:
                     best = (individual, fitness)
             return best[0]
 
+        yield fittest(cur_generation)
         while not terminator(cur_generation):
             for _ in range(gen_size):
                 parent1, parent2 = selector(cur_generation)
                 offspring = crosser(parent1, parent2)
                 offspring = mutator(offspring)
                 next_generation.append(offspring)
+            
             if hold_best:
-                cur_generation = hold_best(
-                    cur_generation) + next_generation
+                cur_generation = hold_best(cur_generation) + next_generation
             else:
                 cur_generation = next_generation
 
+            yield fittest(cur_generation)
             next_generation = []
-        return fittest(cur_generation)

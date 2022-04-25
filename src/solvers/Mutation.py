@@ -23,7 +23,9 @@ class Mutation:
 
     @staticmethod
     def random_corruption(offspring):
-        index = random.randrange(len(offspring.commands))
+        index = 0
+        if len(offspring.commands) > 0:
+            index = random.randrange(len(offspring.commands))
         choice = random.choice(['change', 'add', 'remove'])
 
         if len(offspring.commands) == 0:
@@ -39,6 +41,8 @@ class Mutation:
 
     @staticmethod
     def swap_side(offspring):
+        if len(offspring.commands) < 2:
+            return offspring
         index = random.randrange(len(offspring.commands)-1)
         aux = offspring.commands[index]
         offspring.commands[index] = offspring.commands[index+1]

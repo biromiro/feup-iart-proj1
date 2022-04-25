@@ -24,7 +24,9 @@ class Crossover:
 
     @staticmethod
     def split(parent1, parent2):
-        split_point = random.randrange(len(parent1.commands))
+        split_point = 0
+        if len(parent1.commands) > 0:
+            split_point = random.randrange(len(parent1.commands))
         offspring = State(
             parent1.commands[:split_point] + parent2.commands[split_point:], parent1.board)
         return offspring

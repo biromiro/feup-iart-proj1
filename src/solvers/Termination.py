@@ -1,12 +1,12 @@
 class Termination:
-    iteration = 0
+    def __init__(self):
+        self.iteration = 0
 
     @staticmethod
     def optimal(solution_size):
         def has_optimal(generation):
             for individual in generation:
                 val = individual.evaluate()
-                print('individual:', val, solution_size)
                 if individual.evaluate() == solution_size:
                     return True
             return False

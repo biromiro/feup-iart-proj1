@@ -34,9 +34,9 @@ class Application:
                     self.pop_screen()
                 else:
                     self.screen_stack[-1].on_key_press(event.key)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 self.screen_stack[-1].on_mouse_press(event.pos)
-            elif event.type == pygame.MOUSEBUTTONUP:
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 self.screen_stack[-1].on_mouse_release(event.pos)
             elif event.type == pygame.MOUSEMOTION:
                 self.screen_stack[-1].on_mouse_move(event.pos)

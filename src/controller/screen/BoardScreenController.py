@@ -1,18 +1,22 @@
 import pygame
 from src.controller.SolverAnimator import SolverAnimator
 from src.model.CommandsInput import CommandsInput
+from src.solvers.Crossover import Crossover
+from src.solvers.Mutation import Mutation
 from src.solvers.Scheduler import Scheduler
 from src.solvers.Optimization import Optimization
 from src.solvers.Heuristic import Heuristic
 from src.controller.ButtonListController import ButtonListController
 from src.graphics.ButtonView import ButtonView
 from src.solvers.Search import Search
+from src.solvers.Selection import Selection
 from src.solvers.State import State
 from src.controller.RobotAnimator import RobotAnimator
 from src.graphics.BoardView import BoardView
 from src.controller.Controller import Controller
 from src.model.Button import Button
 from src.controller.CommandsInputController import CommandsInputController
+from src.solvers.Termination import Termination
 
 class BoardScreenController(Controller):
     def __init__(self, _push_screen, board, human_player):
@@ -47,7 +51,7 @@ class BoardScreenController(Controller):
                 Button('Greedy Search', lambda: self.page_heuristic(Search.greedy)),
                 Button('A* Search', lambda: self.page_heuristic(Search.astar)),
                 Button('Simulated Annealing', self.page_scheduler),
-                Button('Genetic Algorithm', lambda: print("TODO")),
+                Button('Genetic Algorithm', self.page_selector),
             ], 
             (640, 10), 30, (364, 50), 20, ButtonView,
             title="Choose solver:",
@@ -68,15 +72,55 @@ class BoardScreenController(Controller):
     def page_scheduler(self):
         self.side_bar = ButtonListController(
             [
-                Button('Exponential Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.exponential_multiplicative_cooling)),
-                Button('Logarithmic Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.logarithmical_multiplicative_cooling)),
-                Button('Linear Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.linear_multiplicative_cooling)),
-                Button('Quadratic Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.quadratic_multiplicative_cooling)),
-                Button('Adaptive Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.adaptive_cooling, adaptive=True)),
+                Button('Linear Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.linear_cooling)),
+                Button('Exponential Mult. Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.exponential_multiplicative_cooling)),
+                Button('Logarithmic Mult. Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.logarithmical_multiplicative_cooling)),
+                Button('Linear Mult. Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.linear_multiplicative_cooling)),
+                Button('Quadratic Mult. Cooling', lambda: self.page_annealing_solve(schedule=Scheduler.quadratic_multiplicative_cooling)),
             ], 
             (640, 10), 30, (364, 50), 20, ButtonView,
             back_action=self.page_solvers,
             title="Choose schedule:",
+        )
+
+    def page_selector(self):
+        self.side_bar = ButtonListController(
+            [
+                Button('Elitist cut 0.1', lambda: self.page_mutator(Selection.elitist(0.1))),
+                Button('Elitist cut 0.3', lambda: self.page_mutator(Selection.elitist(0.3))),
+                Button('Elitist cut 0.5', lambda: self.page_mutator(Selection.elitist(0.5))),
+                Button('Elitist cut 0.7', lambda: self.page_mutator(Selection.elitist(0.7))),
+                Button('Random', lambda: self.page_mutator(Selection.random_parents)),
+                Button('Roulette', lambda: self.page_mutator(Selection.roulette)),
+            ], 
+            (640, 10), 30, (364, 50), 20, ButtonView,
+            back_action=self.page_solvers,
+            title="Choose selection:",
+        )
+    
+    def page_mutator(self, selector):
+        self.side_bar = ButtonListController(
+            [
+                Button('Mutate 10%', lambda: self.page_crosser(selector, Mutation.mutate_percent(10, Mutation.random_corruption))),
+                Button('Mutate 25%', lambda: self.page_crosser(selector, Mutation.mutate_percent(25, Mutation.random_corruption))),
+                Button('Mutate 50%', lambda: self.page_crosser(selector, Mutation.mutate_percent(50, Mutation.random_corruption))),
+                Button('Mutate 75%', lambda: self.page_crosser(selector, Mutation.mutate_percent(75, Mutation.random_corruption))),
+                Button('Mutate 90%', lambda: self.page_crosser(selector, Mutation.mutate_percent(90, Mutation.random_corruption))),
+            ], 
+            (640, 10), 30, (364, 50), 20, ButtonView,
+            back_action=self.page_selector,
+            title="Choose mutation:",
+        )
+
+    def page_crosser(self, selector, mutator):
+        self.side_bar = ButtonListController(
+            [
+                Button('Random origin', lambda: self.page_genetic_solve(selector, mutator, Crossover.random_origin)),
+                Button('Split', lambda: self.page_genetic_solve(selector, mutator, Crossover.split)),
+            ], 
+            (640, 10), 30, (364, 50), 20, ButtonView,
+            back_action=lambda: self.page_mutator(selector),
+            title="Choose crossover:",
         )
 
     def page_search_solve(self, algorithm, initial_state=None, is_final=None, **kwargs):
@@ -88,10 +132,23 @@ class BoardScreenController(Controller):
         initial_state = initial_state or State.initial_guess(self.board)
         self.page_solve(Optimization.simulated_annealing(initial_state, schedule, **kwargs))
 
-    def page_solve(self, solver):
+    def page_genetic_solve(self, selector, mutator, crosser):
+        self.page_solve(
+            Optimization.genetic_algorithms(
+                Selection.generation_zero(25, self.board.preferred_moves, self.board), 
+                selector, 
+                crosser, 
+                mutator, 
+                Termination().iteration_cap(256), 
+                Selection.best_n(1)
+            ),
+            slow_down=True
+        )
+
+    def page_solve(self, solver, slow_down=False):
         current_commands = self.commands_panel.input.commands
         self.commands_panel.input.enabled = False
-        self.solver_animator = SolverAnimator(solver, self.commands_panel.input, self.human_player, self.board.preferred_moves)
+        self.solver_animator = SolverAnimator(solver, self.commands_panel.input, self.human_player, self.board.preferred_moves, slow_down=slow_down)
 
         def cancel():
             self.solver_animator = None
