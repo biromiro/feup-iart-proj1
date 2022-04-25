@@ -5,8 +5,7 @@ import math
 
 class Optimization:
     @staticmethod
-    def simulated_annealing(state, schedule, adaptive=False, use_preferred_moves=False):
-        temp = 1000
+    def simulated_annealing(state, schedule, adaptive=False, temp=1000, use_preferred_moves=False):
         fsi = state.evaluate()
         f = fsi
         for t in itertools.count(start=1):
@@ -16,7 +15,7 @@ class Optimization:
             else:
                 temp = schedule(temp, t)
 
-            if round(temp, 4) == 0:
+            if round(temp, 5) == 0:
                 return
 
             if state.board.preferred_moves and use_preferred_moves:
@@ -42,7 +41,7 @@ class Optimization:
                         f = fsi
 
     @staticmethod
-    def genetic_algorithms(gen_zero, selector, crosser, mutator, terminator):
+    def genetic_algorithms(gen_zero, selector, crosser, mutator, terminator, hold_best=None):
         gen_size = len(gen_zero)
         cur_generation = gen_zero
         next_generation = []
@@ -56,13 +55,18 @@ class Optimization:
             return best[0]
         
         while not terminator(cur_generation):
-            print("new generation")
             for _ in range(gen_size):
                 parent1, parent2 = selector(cur_generation)
                 offspring = crosser(parent1, parent2)
                 offspring = mutator(offspring)
                 next_generation.append(offspring)
-            cur_generation = next_generation
+            if hold_best:
+                cur_generation = hold_best(
+                    cur_generation) + next_generation
+            else:
+                cur_generation = next_generation
+
+            next_generation = []
         
         return fittest(cur_generation)
             
